@@ -1,0 +1,1526 @@
+CREATE SEQUENCE INCR_CLIENT START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE INCR_CONT START WITH 1000 INCREMENT BY 1;
+CREATE SEQUENCE INCR_PASAGER START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE INCR_BAGAJ START WITH 10 INCREMENT BY 10;
+
+CREATE SEQUENCE INCR_ZBOR START WITH 1 INCREMENT BY 1;
+
+
+CREATE SEQUENCE INCR_ANGAJAT START WITH 1 INCREMENT BY 1;
+
+
+CREATE TABLE CLIENT(COD_CLIENT NUMBER PRIMARY KEY, NUME_CLIENT VARCHAR2(50) NOT NULL,
+PRENUME VARCHAR2(50) NOT NULL, EMAIL VARCHAR(50) NOT NULL UNIQUE, TELEFON VARCHAR2(15) NOT NULL,
+DATA_NASTERII DATE NOT NULL);
+
+
+CREATE TABLE CONT_CLIENT(cod_cont NUMBER PRIMARY KEY, cod_client NUMBER NOT NULL, nivel_fidelitate VARCHAR2(50),
+CONSTRAINT uq_cont UNIQUE (cod_client),
+ FOREIGN KEY (cod_client) REFERENCES CLIENT(cod_client));
+
+
+
+CREATE TABLE CONTINENT(cod_continent VARCHAR2(6) PRIMARY KEY NOT NULL,
+nume_continent VARCHAR2(50));
+
+
+CREATE TABLE TARA (cod_tara VARCHAR2(4) PRIMARY KEY, nume_tara VARCHAR2(50), cod_continent VARCHAR2(6), FOREIGN KEY (cod_continent) REFERENCES CONTINENT(cod_continent));
+
+
+CREATE TABLE ORAS(cod_oras VARCHAR2(7) PRIMARY KEY, 
+nume_oras VARCHAR2(50), cod_tara VARCHAR2(4),
+FOREIGN KEY (cod_tara) REFERENCES TARA(cod_tara));
+
+
+CREATE TABLE AERONAVA(cod_aeronava VARCHAR2(7) PRIMARY KEY,
+nume_aeronava VARCHAR2(30), tip_aeronava VARCHAR2(30));
+
+
+CREATE TABLE AEROPORT(cod_aeroport VARCHAR2(10) PRIMARY KEY NOT NULL, nume VARCHAR2(70) NOT NULL, cod_oras VARCHAR2(7) NOT NULL, 
+FOREIGN KEY (cod_oras) REFERENCES ORAS(cod_oras));
+
+
+CREATE TABLE ZBOR(cod_zbor VARCHAR2(5) PRIMARY KEY NOT NULL,  cod_aeroport_plecare VARCHAR(10) NOT NULL, 
+cod_aeroport_sosire VARCHAR2(10) NOT NULL, data_plecare DATE NOT NULL, data_sosire DATE NOT NULL,cod_aeronava VARCHAR2(7),
+FOREIGN KEY (cod_aeronava) REFERENCES AERONAVA(cod_aeronava),
+FOREIGN KEY (cod_aeroport_plecare) REFERENCES AEROPORT(cod_aeroport),
+FOREIGN KEY (cod_aeroport_sosire) REFERENCES AEROPORT(cod_aeroport));
+
+
+CREATE TABLE PASAGER (cod_pasager NUMBER PRIMARY KEY NOT NULL, nume_pasager VARCHAR2(50), prenume_pasager VARCHAR2(50), tip_carte_iden VARCHAR2(20), serie_act VARCHAR2(10) NOT NULL UNIQUE);
+
+
+CREATE TABLE BAGAJ (cod_bagaj NUMBER PRIMARY KEY, cod_pasager NUMBER NOT NULL UNIQUE, pret NUMBER NOT NULL, tip VARCHAR2(15) DEFAULT 'STANDARD' CHECK (tip IN ('STANDARD', 'COMPARTIMENT', 'CALA')), FOREIGN KEY (cod_pasager) REFERENCES PASAGER(cod_pasager));
+
+
+
+
+CREATE TABLE ANGAJAT(cod_angajat NUMBER PRIMARY KEY NOT NULL, tip_angajat VARCHAR2(30) NOT NULL, salariu NUMBER NOT NULL, an_angajare NUMBER NOT NULL);
+
+CREATE TABLE PILOT(cod_angajat NUMBER PRIMARY KEY NOT NULL, tip_licenta VARCHAR2(4));
+
+CREATE TABLE INSOTITOR_ZBOR(cod_angajat NUMBER PRIMARY KEY NOT NULL, nr_limbi_vorbite NUMBER NOT NULL, nr_cursuri_siguranta NUMBER);
+
+CREATE TABLE CADRU_MEDICAL(cod_angajat NUMBER PRIMARY KEY NOT NULL, specializare VARCHAR2(30), an_certificare NUMBER NOT NULL);
+
+
+CREATE TABLE ORAR_ANGAJATI(cod_angajat NUMBER NOT NULL, cod_zbor VARCHAR2(5) NOT NULL,rol VARCHAR(30) DEFAULT 'PRINCIPAL' CHECK (rol IN ('PRINCIPAL', 'SECUNDAR')), CONSTRAINT ORAR_ANG_PK PRIMARY KEY (cod_angajat,cod_zbor), FOREIGN KEY (cod_angajat) REFERENCES ANGAJAT(cod_angajat), FOREIGN KEY (cod_zbor) REFERENCES ZBOR (cod_zbor));
+
+
+CREATE TABLE BILET (cod_pasager NUMBER NOT NULL, cod_zbor VARCHAR2(5) NOT NULL, status_check_in VARCHAR2(30) DEFAULT 'NEREALIZAT' CHECK (status_check_in IN ('NEREALIZAT', 'REALIZAT CU SUCCES')), CONSTRAINT BILET_pk PRIMARY KEY (cod_pasager,cod_zbor), FOREIGN KEY (cod_pasager) REFERENCES PASAGER (cod_pasager),
+FOREIGN KEY (cod_zbor) REFERENCES ZBOR(cod_zbor));
+
+
+
+
+
+
+
+CREATE TABLE REZERVARE (
+cod_client NUMBER NOT NULL,
+cod_zbor VARCHAR2(5) NOT NULL,
+cod_pasager NUMBER NOT NULL,
+data_rezervarii DATE DEFAULT SYSDATE,
+status VARCHAR2(20) NOT NULL,
+CONSTRAINT rezervare_pk PRIMARY KEY (cod_client, cod_pasager, cod_zbor),
+FOREIGN KEY (cod_client) REFERENCES CLIENT(cod_client),
+FOREIGN KEY (cod_pasager) REFERENCES PASAGER(cod_pasager),
+FOREIGN KEY (cod_zbor) REFEReNCES ZBOR(cod_zbor));
+
+CREATE SEQUENCE INCR_CLIENT START WITH 1 INCREMENT BY 1;
+
+
+
+INSERT INTO CLIENT VALUES(INCR_CLIENT.NEXTVAL,'Popescu', 'Ion', 'ion.popescu@gmail.com','0723123456',TO_DATE('1995-03-14','YYYY-MM-DD'));
+
+
+INSERT INTO CLIENT VALUES (INCR_CLIENT.NEXTVAL, 'Ionescu', 'Maria', 'maria.ionescu@yahoo.com', '07445556667', TO_DATE('1988-07-21', 'YYYY-MM-DD'));
+
+INSERT INTO CLIENT VALUES(INCR_CLIENT.NEXTVAL, 'Radu', 'Elena', 'elena.radu@gmail.com', '0730111222', TO_DATE('1992-05-17','YYYY-MM-DD'));
+
+INSERT INTO CLIENT VALUES (INCR_CLIENT.NEXTVAL,'Dumitru', 'Cristian', 'cristi.dumitru@yahoo.com','0769123456', TO_DATE('1990-05-07', 'YYYY-MM-DD'));
+
+INSERT INTO CLIENT VALUES (INCR_CLIENT.NEXTVAL,'Georgescu', 'Ioana', 'ioana.geo@gmail.com','0722122233',TO_DATE('1985-12-11','YYYY-MM-DD'));
+
+INSERT INTO CLIENT VALUES(INCR_CLIENT.NEXTVAL,'Mihai','Alexandra','alex.mihai@yahoo.com','0750345678', TO_DATE('1997-08-30','YYYY-MM-DD'));
+
+INSERT INTO CLIENT VALUES (INCR_CLIENT.NEXTVAL, 'Tudor', 'Vlad', 'vlad.tudor@gmail.com', '0789987654', TO_DATE('1991-04-06','YYYY-MM-DD'));
+
+INSERT INTO CLIENT VALUES(INCR_CLIENT.NEXTVAL,'Stan', 'Garbriela', 'gabi.stan@yahoo.com','0712321654',TO_DATE('1983-02-25','YYYY-MM-DD'));
+
+INSERT INTO CLIENT VALUES (INCR_CLIENT.NEXTVAL,'Ilie','Robert','ilie.robert@gmail.com', '0765432765',TO_DATE('2000-09-23','YYYY-MM-DD'));
+
+INSERT INTO CLIENT VALUES(INCR_CLIENT.NEXTVAL, 'Marinescu','Laura', 'laura.mari@yahoo.com','0798567417',TO_DATE('2001-07-17','YYYY-MM-DD'));
+
+INSERT INTO CLIENT VALUES (INCR_CLIENT.NEXTVAL,'Albu','Denisa','alb.denisa@yahoo.com','0756489123', TO_DATE('1980-05-08','YYYY-MM-DD'));
+
+INSERT INTO CLIENT VALUES(INCR_CLIENT.NEXTVAL,'Barbu','Rares', 'rares.barb@gmail.com','0789345876', TO_DATE('2003-01-24', 'YYYY-MM-DD'));
+
+INSERT INTO CLIENT VALUES(INCR_CLIENT.NEXTVAL,'Petrescu', 'Marius', 'marius.petrescu@yahoo.com', '0799876379', TO_DATE('1998-05-11','YYYY-MM-DD'));
+
+INSERT INTO CLIENT VALUES (INCR_CLIENT.NEXTVAL,'Popescu', 'Mihai', 'mihai.pop@gmail.com', '0765443228', TO_DATE('1999-11-12','YYYY-MM-DD'));
+
+INSERT INTO CLIENT VALUES (INCR_CLIENT.NEXTVAL, 'Neagu', 'Andreea', 'deea.neagu@yahoo.com', '0789665441', TO_DATE('2005-12-15','YYYY-MM-DD'));
+CREATE SEQUENCE INCR_CONT START WITH 1000 INCREMENT BY 1;
+
+INSERT INTO CONT_CLIENT VALUES(INCR_CONT.NEXTVAL, 1,  'Silver');
+
+INSERT INTO CONT_CLIENT VALUES (INCR_CONT.NEXTVAL, 2,  'Gold');
+
+INSERT INTO CONT_CLIENT VALUES (INCR_CONT.NEXTVAL, 3,  'Standard');
+
+INSERT INTO CONT_CLIENT VALUES (INCR_CONT.NEXTVAL, 4, 'Bronze');
+
+INSERT INTO CONT_CLIENT VALUES (INCR_CONT.NEXTVAL, 5, 'Bronze');
+
+INSERT INTO CONT_CLIENT VALUES(INCR_CONT.NEXTVAL, 6, 'Gold');
+
+INSERT INTO CONT_CLIENT VALUES(INCR_CONT.NEXTVAL, 7,  'Standard');
+
+INSERT INTO CONT_CLIENT VALUES(INCR_CONT.NEXTVAL, 8, 'Silver');
+
+INSERT INTO CONT_CLIENT VALUES(INCR_CONT.NEXTVAL, 9, 'Silver');
+
+INSERT INTO CONT_CLIENT VALUES(INCR_CONT.NEXTVAL, 10, 'Standard');
+
+INSERT INTO CONT_CLIENT VALUES (INCR_CONT.NEXTVAL, 11, 'Gold');
+
+INSERT INTO CONT_CLIENT VALUES(INCR_CONT.NEXTVAL, 12,  'Bronze');
+
+INSERT INTO CONT_CLIENT VALUES(INCR_CONT.NEXTVAL, 13, 'Standard');
+
+INSERT INTO CONT_CLIENT VALUES(INCR_CONT.NEXTVAL, 14, 'Silver');
+
+INSERT INTO CONTINENT VALUES('EU', 'Europa');
+
+INSERT INTO CONTINENT VALUES ('AS', 'Asia');
+
+INSERT INTO CONTINENT VALUES ('AF', 'Africa');
+
+INSERT INTO CONTINENT VALUES ('NA', 'America de Nord');
+
+INSERT INTO CONTINENT VALUES ('SA','America de Sud');
+
+INSERT INTO CONTINENT VALUES ('OC', 'Oceania');
+
+INSERT INTO CONTINENT VALUES('AN', 'Antarctica');
+
+INSERT INTO TARA VALUES ('RO', 'Romania', 'EU');
+
+INSERT INTO TARA VALUES ('FR', 'Franta', 'EU');
+
+INSERT INTO TARA VALUES ('DE', 'Germania', 'EU');
+
+INSERT INTO TARA VALUES ('IT', 'Italia', 'EU');
+
+INSERT INTO TARA VALUES ('ES','Spania', 'EU');
+
+INSERT INTO TARA VALUES ('SUA', 'Statele Unite ale Americii', 'NA');
+
+INSERT INTO TARA VALUES ('CN', 'China', 'AS');
+
+INSERT INTO TARA VALUES ('JP','Japonia', 'AS');
+
+INSERT INTO TARA VALUES ('BR', 'Brazilia', 'SA');
+
+INSERT INTO TARA VALUES ('AU', 'Australia', 'OC');
+
+INSERT INTO TARA VALUES  ('IN', 'India', 'AS');
+
+INSERT INTO TARA VALUES ('UK', 'Regatul Unit', 'EU');
+
+INSERT INTO TARA VALUES ('AR', 'Argentina', 'SA');
+
+INSERT INTO TARA VALUES ('CA', 'Canada', 'NA');
+
+INSERT INTO TARA VALUES ('BE', 'Belgia', 'EU');
+INSERT INTO ORAS VALUES ('BUC', 'Bucuresti', 'RO');
+
+INSERT INTO ORAS VALUES ('PAR', 'Paris', 'FR');
+
+INSERT INTO ORAS VALUES ('BER', 'Berlin', 'DE');
+
+INSERT INTO ORAS VALUES ('ROM', 'Roma', 'IT');
+
+INSERT INTO ORAS VALUES ('MAD', 'Madrid', 'ES');
+
+INSERT INTO ORAS VALUES ('NYC', 'New York City', 'SUA');
+
+INSERT INTO ORAS VALUES ('BJS', 'Beijing', 'CN');
+
+INSERT INTO ORAS VALUES ('TKY', 'Tokyo', 'JP');
+
+INSERT INTO ORAS VALUES ('RIO', 'Rio de Janeiro', 'BR');
+
+INSERT INTO ORAS VALUES ('SYD', 'Sydney', 'AU');
+
+INSERT INTO ORAS VALUES ('DEL', 'New Delhi', 'IN');
+
+INSERT INTO ORAS VALUES ('LON', 'Londra','UK');
+
+INSERT INTO ORAS VALUES ('BUE', 'Buenos Aires', 'AR');
+
+INSERT INTO ORAS VALUES ('TOR', 'Toronto', 'CA');
+
+INSERT INTO ORAS VALUES ('BRU', 'Bruxelles', 'BE');
+
+INSERT INTO ORAS VALUES ('CLU', 'Cluj-Napoca', 'RO');
+
+INSERT INTO ORAS VALUES ('LYO', 'Lyon', 'FR');
+
+INSERT INTO ORAS VALUES ('HAM', 'Hamburg', 'DE');
+
+INSERT INTO ORAS VALUES ('MIL', 'Milano', 'IT');
+
+INSERT INTO AERONAVA VALUES ('A320', 'AIRBUS A320', 'Pasageri');
+
+INSERT INTO AERONAVA VALUES ('B737', 'BOEING 737', 'Pasageri');
+
+INSERT INTO AERONAVA VALUES ('C172', 'CESSNA 172', 'Privat');
+
+INSERT INTO AERONAVA VALUES ('A380', 'AIRBUS A380', 'Pasageri');
+
+INSERT INTO AERONAVA VALUES ('B777', 'BOEING 777', 'Pasageri');
+
+INSERT INTO AERONAVA VALUES ('SR22', 'CIRRUS SR22', 'Privat');
+
+INSERT INTO AERONAVA VALUES ('E175', 'EMBRAER E175', 'Pasageri');
+
+INSERT INTO AERONAVA VALUES ('B747', 'BOEING 747', 'Pasageri');
+
+INSERT INTO AEROPORT VALUES('OTP', 'Aeroportul Henri Coanda','BUC');
+
+INSERT INTO AEROPORT VALUES('CLJ', 'Aeroportul Avram Iancu', 'CLU');
+
+INSERT INTO AEROPORT VALUES('CDG', 'Aeroportul Charles de Gaulle', 'PAR');
+
+INSERT INTO AEROPORT VALUES('LYS', 'Aeroportul Lyon-Saint Exupery', 'LYO');
+
+INSERT INTO AEROPORT VALUES('BER', 'Aeroportul Berlin Brandenburg', 'BER');
+
+INSERT INTO AEROPORT VALUES('HAM', 'Aeroportul Hamburg','HAM');
+
+INSERT INTO AEROPORT VALUES('FCO', 'Aeroportul Leonardo da Vinci', 'ROM');
+
+INSERT INTO AEROPORT VALUES('MXP', 'Aeroportul Milano Malpensa', 'MIL');
+
+INSERT INTO AEROPORT VALUES('MAD', 'Aeroportul Adolfo Suarez Madrid-Baraj', 'MAD');
+
+INSERT INTO AEROPORT VALUES('JFK', 'Aeroportul John F. Kennedy', 'NYC');
+
+INSERT INTO AEROPORT VALUES('PEK', 'Aeroportul Beijing Capital', 'BJS');
+
+INSERT INTO AEROPORT VALUES('HND', 'Aeroportul Tokyo Haneda', 'TKY');
+
+INSERT INTO AEROPORT VALUES('GIG', 'Aeroportul Galeao', 'RIO');
+
+INSERT INTO AEROPORT VALUES('SYD', 'Aeroportul Kingsford Smith', 'SYD');
+
+INSERT INTO AEROPORT VALUES('DEL', 'Aeroportul Indira Gandhi', 'DEL');
+
+INSERT INTO AEROPORT VALUES('LHR', 'Aeroportul Heathrow', 'LON');
+
+
+INSERT INTO AEROPORT VALUES('EZE', 'Aeroportul Ministro Pistarini', 'BUE');
+
+INSERT INTO AEROPORT VALUES('YYZ', 'Aeroportul Toronto Pearson', 'TOR');
+
+INSERT INTO AEROPORT VALUES('BRU', 'Aeroportul Bruxelles-Zaventem', 'BRU');
+
+CREATE SEQUENCE INCR_ZBOR START WITH 1 INCREMENT BY 1;
+
+INSERT INTO ZBOR VALUES('ZB'||INCR_ZBOR.NEXTVAL, 'OTP','CDG', TO_DATE('2025-06-01 9:15:00','YYYY-MM-DD HH24:MI:SS'), TO_DATE('2025-06-01 10:45:00', 'YYYY-MM-DD HH24:MI:SS'), 'A320');
+
+INSERT INTO ZBOR VALUES('ZB'||INCR_ZBOR.NEXTVAL, 'CDG','BER',TO_DATE('2025-07-03 09:15:00','YYYY-MM-DD HH24:MI:SS'), TO_DATE('2025-07-03 10:45:00','YYYY-MM-DD HH24:MI:SS'),'B737');
+
+INSERT INTO ZBOR VALUES('ZB'||INCR_ZBOR.NEXTVAL,'MAD','JFK',TO_DATE('2025-09-23 21:00:00','YYYY-MM-DD HH24:MI:SS'), TO_DATE('2025-09-24 06:00:00', 'YYYY-MM-DD HH24:MI:SS'),'A320');
+
+
+INSERT INTO ZBOR VALUES('ZB'||INCR_ZBOR.NEXTVAL,'BRU','OTP',TO_DATE('2025-08-20 13:00:00','YYYY-MM-DD HH24:MI:SS'), TO_DATE('2025-08-20 15:00:00','YYYY-MM-DD HH24:MI:SS'),'A380');
+
+INSERT INTO ZBOR VALUES('ZB'||INCR_ZBOR.NEXTVAL,'SYD','DEL', TO_DATE('2025-10-12 11:30:00','YYYY-MM-DD HH24:MI:SS'), TO_DATE('2025-10-12 20:00:00','YYYY-MM-DD HH24:MI:SS'),'C172');
+
+
+
+INSERT INTO ZBOR
+VALUES('ZB'||INCR_ZBOR.NEXTVAL, 'OTP','LHR', TO_DATE('2025-11-05 06:40:00','YYYY-MM-DD HH24:MI:SS'),TO_DATE('2025-11-05 08:10:00','YYYY-MM-DD HH24:MI:SS'),'A320');
+
+INSERT INTO ZBOR VALUES('ZB'||INCR_ZBOR.NEXTVAL, 'CLJ','FCO', TO_DATE('2025-12-14 12:20:00','YYYY-MM-DD HH24:MI:SS'), TO_DATE('2025-12-14 14:05:00','YYYY-MM-DD HH24:MI:SS'), 'B737');
+
+INSERT INTO ZBOR VALUES('ZB'||INCR_ZBOR.NEXTVAL, 'BER','HAM', TO_DATE('2025-06-18 16:15:00','YYYY-MM-DD HH24:MI:SS'),TO_DATE('2025-06-18 17:25:00','YYYY-MM-DD HH24:MI:SS'), 'A320');
+
+INSERT INTO ZBOR VALUES('ZB'||INCR_ZBOR.NEXTVAL, 'LYS','MXP', TO_DATE('2025-07-22 09:30:00','YYYY-MM-DD HH24:MI:SS'), TO_DATE('2025-07-22 10:25:00','YYYY-MM-DD HH24:MI:SS'), 'C172');
+
+INSERT INTO ZBOR VALUES('ZB'||INCR_ZBOR.NEXTVAL, 'FCO','MAD', TO_DATE('2025-08-02 18:00:00','YYYY-MM-DD HH24:MI:SS'), TO_DATE('2025-08-02 20:05:00','YYYY-MM-DD HH24:MI:SS'), 'A320');
+
+INSERT INTO ZBOR VALUES('ZB'||INCR_ZBOR.NEXTVAL, 'LHR','YYZ', TO_DATE('2025-09-10 10:15:00','YYYY-MM-DD HH24:MI:SS'),TO_DATE('2025-09-10 13:05:00','YYYY-MM-DD HH24:MI:SS'), 'A380');
+
+INSERT INTO ZBOR VALUES('ZB'||INCR_ZBOR.NEXTVAL, 'YYZ','JFK',TO_DATE('2025-10-01 07:50:00','YYYY-MM-DD HH24:MI:SS'), TO_DATE('2025-10-01 09:25:00','YYYY-MM-DD HH24:MI:SS'), 'B737');
+
+INSERT INTO ZBOR VALUES('ZB'||INCR_ZBOR.NEXTVAL, 'PEK','HND', TO_DATE('2025-10-19 14:10:00','YYYY-MM-DD HH24:MI:SS'), TO_DATE('2025-10-19 18:05:00','YYYY-MM-DD HH24:MI:SS'), 'A320');
+
+INSERT INTO ZBOR VALUES('ZB'||INCR_ZBOR.NEXTVAL, 'GIG','EZE', TO_DATE('2025-11-23 23:30:00','YYYY-MM-DD HH24:MI:SS'), TO_DATE('2025-11-24 02:40:00','YYYY-MM-DD HH24:MI:SS'), 'A380');
+
+INSERT INTO ZBOR VALUES('ZB'||INCR_ZBOR.NEXTVAL, 'SYD','PEK', TO_DATE('2025-12-03 08:15:00','YYYY-MM-DD HH24:MI:SS'),  TO_DATE('2025-12-03 18:30:00','YYYY-MM-DD HH24:MI:SS'), 'B737');
+
+
+CREATE SEQUENCE INCR_PASAGER START WITH 1 INCREMENT BY 1;
+
+
+INSERT INTO PASAGER VALUES(INCR_PASAGER.NEXTVAL, 'Popescu', 'Ion','Pasaport', 'AB12345678');
+
+INSERT INTO PASAGER VALUES(INCR_PASAGER.NEXTVAL, 'Ionescu', 'Maria', 'CI', 'XZ09876543');
+
+INSERT INTO PASAGER VALUES(INCR_PASAGER.NEXTVAL,'Dumitrescu', 'Florin', 'Pasaport', 'CD56789012');
+
+INSERT INTO PASAGER VALUES(INCR_PASAGER.NEXTVAL,'Radulescu', 'Cristina', 'CI', 'LM34567890');
+
+INSERT INTO PASAGER VALUES(INCR_PASAGER.NEXTVAL,'Serban', 'Garbriela', 'Pasaport', 'WX12340987');
+
+INSERT INTO PASAGER VALUES (INCR_PASAGER.NEXTVAL, 'Radu', 'Elena', 'CI', 'XZ11223344');
+
+INSERT INTO PASAGER VALUES (INCR_PASAGER.NEXTVAL, 'Dumitru', 'Cristian', 'Pasaport', 'AB99887766');
+
+INSERT INTO PASAGER VALUES (INCR_PASAGER.NEXTVAL, 'Georgescu', 'Ioana', 'Pasaport', 'CD11224455');
+
+INSERT INTO PASAGER VALUES (INCR_PASAGER.NEXTVAL, 'Mihai', 'Alexandra', 'CI', 'EF66778899');
+
+INSERT INTO PASAGER VALUES (INCR_PASAGER.NEXTVAL, 'Tudor', 'Vlad', 'Pasaport', 'GH44556677');
+
+INSERT INTO PASAGER VALUES (INCR_PASAGER.NEXTVAL, 'Stan', 'Gabriela', 'CI', 'IJ22334455');
+
+INSERT INTO PASAGER VALUES (INCR_PASAGER.NEXTVAL, 'Ilie', 'Robert', 'Pasaport', 'KL55667788');
+
+INSERT INTO PASAGER VALUES (INCR_PASAGER.NEXTVAL, 'Marinescu', 'Laura', 'CI', 'MN66778899');
+
+INSERT INTO PASAGER VALUES (INCR_PASAGER.NEXTVAL, 'Albu', 'Denisa', 'Pasaport', 'OP77889900');
+
+INSERT INTO PASAGER VALUES (INCR_PASAGER.NEXTVAL, 'Barbu', 'Rares', 'CI', 'QR88990011');
+
+
+INSERT INTO BAGAJ VALUES (1,  1,  0,   'STANDARD');
+
+INSERT INTO BAGAJ VALUES (2,  2,  50,  'CALA');
+
+INSERT INTO BAGAJ VALUES (3,  3,  30,  'COMPARTIMENT');
+
+INSERT INTO BAGAJ VALUES (4,  4,  0,   'STANDARD');
+
+INSERT INTO BAGAJ VALUES (5,  5,  50,  'CALA');
+
+INSERT INTO BAGAJ VALUES (6,  6,  30,  'COMPARTIMENT');
+
+INSERT INTO BAGAJ VALUES (7,  7,  0,   'STANDARD');
+
+INSERT INTO BAGAJ VALUES (8,  8,  50,  'CALA');
+
+INSERT INTO BAGAJ VALUES (9,  9,  30,  'COMPARTIMENT');
+
+INSERT INTO BAGAJ VALUES (10, 10, 0,   'STANDARD');
+
+INSERT INTO BAGAJ VALUES (11, 11, 50,  'CALA');
+
+INSERT INTO BAGAJ VALUES (12, 12, 30,  'COMPARTIMENT');
+
+INSERT INTO BAGAJ VALUES (13, 13, 0,   'STANDARD');
+
+INSERT INTO BAGAJ VALUES (14, 14, 50,  'CALA');
+
+INSERT INTO BAGAJ VALUES (15, 15, 30,  'COMPARTIMENT');
+
+CREATE SEQUENCE INCR_ANGAJAT START WITH 1 INCREMENT BY 1;
+INSERT INTO ANGAJAT VALUES (incr_angajat.NEXTVAL,'Pilot', 8500, 2012);
+
+INSERT INTO ANGAJAT VALUES (incr_angajat.NEXTVAL,'Pilot', 7000, 2015);
+
+INSERT INTO ANGAJAT VALUES (incr_angajat.NEXTVAL,'Pilot', 9000, 2011);
+
+INSERT INTO ANGAJAT VALUES (incr_angajat.NEXTVAL,'Pilot', 7200, 2016);
+
+INSERT INTO ANGAJAT VALUES (incr_angajat.NEXTVAL,'Pilot', 7800, 2017);
+
+INSERT INTO ANGAJAT VALUES (incr_angajat.NEXTVAL, 'Insotitor de zbor', 4000, 2018);
+
+INSERT INTO ANGAJAT VALUES (incr_angajat.NEXTVAL,  'Insotitor de zbor', 3500, 2019);
+
+INSERT INTO ANGAJAT VALUES (incr_angajat.NEXTVAL,  'Insotitor de zbor', 4200, 2020);
+
+INSERT INTO ANGAJAT VALUES (incr_angajat.NEXTVAL,  'Insotitor de zbor', 3800, 2021);
+
+INSERT INTO ANGAJAT VALUES (incr_angajat.NEXTVAL,  'Insotitor de zbor', 3900, 2022);
+
+INSERT INTO ANGAJAT VALUES (incr_angajat.NEXTVAL,'Cadru medical', 9000, 2016);
+
+INSERT INTO ANGAJAT VALUES (incr_angajat.NEXTVAL,'Cadru medical', 9500, 2014);
+
+INSERT INTO ANGAJAT VALUES (incr_angajat.NEXTVAL, 'Cadru medical', 9200, 2015);
+
+INSERT INTO ANGAJAT VALUES (incr_angajat.NEXTVAL, 'Cadru medical', 8800, 2017);
+
+INSERT INTO ANGAJAT VALUES (incr_angajat.NEXTVAL,'Cadru medical', 9100, 2018);
+
+INSERT INTO PILOT VALUES (1, 'A320');
+
+INSERT INTO PILOT VALUES (2, 'B737');
+
+INSERT INTO PILOT VALUES (3, 'B777');
+
+INSERT INTO PILOT VALUES (4, 'A330');
+
+INSERT INTO PILOT VALUES (5, 'B787');
+
+
+INSERT INTO INSOTITOR_ZBOR VALUES (6, 3, 5);
+
+INSERT INTO INSOTITOR_ZBOR VALUES (7, 2, 4);
+
+INSERT INTO INSOTITOR_ZBOR VALUES (8, 4, 6);
+
+INSERT INTO INSOTITOR_ZBOR VALUES (9, 1, 3);
+
+INSERT INTO INSOTITOR_ZBOR VALUES (10, 5, 7);
+
+
+
+INSERT INTO CADRU_MEDICAL VALUES (11, 'Cardiologie', 2015);
+
+INSERT INTO CADRU_MEDICAL VALUES (12, 'Ortopedie', 2018);
+
+INSERT INTO CADRU_MEDICAL VALUES (13, 'Neurologie', 2017);
+
+INSERT INTO CADRU_MEDICAL VALUES (14, 'Pediatrie', 2019);
+
+INSERT INTO CADRU_MEDICAL VALUES (15, 'Chirurgie', 2020);
+
+
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (1,  'ZB1',  'PRINCIPAL');
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (6,  'ZB1',  'SECUNDAR');
+
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (2,  'ZB2',  'PRINCIPAL');
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (7,  'ZB2',  'SECUNDAR');
+
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (3,  'ZB3',  'PRINCIPAL');
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (8,  'ZB3',  'SECUNDAR');
+
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (4,  'ZB4',  'PRINCIPAL');
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (9,  'ZB4',  'SECUNDAR');
+
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (5,  'ZB5',  'PRINCIPAL');
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (10, 'ZB5',  'SECUNDAR');
+
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (1,  'ZB6',  'PRINCIPAL');
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (11, 'ZB6',  'SECUNDAR');
+
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (2,  'ZB7',  'PRINCIPAL');
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (12, 'ZB7',  'SECUNDAR');
+
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (3,  'ZB8',  'PRINCIPAL');
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (13, 'ZB8',  'SECUNDAR');
+
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (4,  'ZB9',  'PRINCIPAL');
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (14, 'ZB9',  'SECUNDAR');
+
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (5,  'ZB10', 'PRINCIPAL');
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (15, 'ZB10', 'SECUNDAR');
+
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (1,  'ZB11', 'PRINCIPAL');
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (6,  'ZB11', 'SECUNDAR');
+
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (2,  'ZB12', 'PRINCIPAL');
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (7,  'ZB12', 'SECUNDAR');
+
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (3,  'ZB13', 'PRINCIPAL');
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (8,  'ZB13', 'SECUNDAR');
+
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (4,  'ZB14', 'PRINCIPAL');
+INSERT INTO ORAR_ANGAJATI (cod_angajat, cod_zbor, rol) VALUES (9,  'ZB14', 'SECUNDAR');
+
+
+INSERT INTO BILET VALUES VALUES (1,  'ZB1',  'REALIZAT CU SUCCES');
+
+INSERT INTO BILET VALUES (1,  'ZB2',  'REALIZAT CU SUCCES');
+
+INSERT INTO BILET VALUES (1,  'ZB3',  'REALIZAT CU SUCCES');
+
+INSERT INTO BILET VALUES (1,  'ZB4',  'REALIZAT CU SUCCES');
+
+INSERT INTO BILET VALUES (1,  'ZB5',  'NEREALIZAT');
+
+INSERT INTO BILET VALUES (1,  'ZB6',  'NEREALIZAT');
+
+INSERT INTO BILET VALUES (1,  'ZB7',  'NEREALIZAT');
+
+INSERT INTO BILET VALUES (1,  'ZB8',  'NEREALIZAT');
+
+INSERT INTO BILET VALUES (1,  'ZB9',  'NEREALIZAT');
+
+INSERT INTO BILET VALUES (1,  'ZB10', 'NEREALIZAT');
+
+INSERT INTO BILET VALUES (1,  'ZB11', 'NEREALIZAT');
+
+INSERT INTO BILET VALUES (1,  'ZB12', 'NEREALIZAT');
+
+INSERT INTO BILET VALUES (1,  'ZB13', 'NEREALIZAT');
+
+INSERT INTO BILET VALUES (1,  'ZB14', 'NEREALIZAT');
+
+INSERT INTO BILET VALUES (6,  'ZB1',  'REALIZAT CU SUCCES');
+
+INSERT INTO BILET VALUES (7,  'ZB2',  'REALIZAT CU SUCCES');
+
+INSERT INTO BILET VALUES (8,  'ZB2',  'NEREALIZAT');
+
+INSERT INTO BILET VALUES (9,  'ZB3',  'NEREALIZAT');
+
+INSERT INTO BILET VALUES (10, 'ZB3',  'NEREALIZAT');
+
+INSERT INTO BILET VALUES (12, 'ZB4',  'NEREALIZAT');
+
+INSERT INTO BILET VALUES (13, 'ZB5',  'NEREALIZAT');
+
+INSERT INTO BILET VALUES (14, 'ZB5',  'NEREALIZAT');
+
+INSERT INTO BILET VALUES (2,  'ZB2',  'REALIZAT CU SUCCES');
+
+INSERT INTO BILET VALUES (3,  'ZB3',  'REALIZAT CU SUCCES');
+
+INSERT INTO BILET VALUES (4,  'ZB4',  'NEREALIZAT');
+
+
+INSERT INTO REZERVARE VALUES (1, 'ZB1', 1, TO_DATE('2025-05-20', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (1, 'ZB2', 1, TO_DATE('2025-05-20', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (1, 'ZB3', 1, TO_DATE('2025-05-20', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (1, 'ZB4', 1, TO_DATE('2025-05-20', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (1, 'ZB5', 1, TO_DATE('2025-05-20', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (1, 'ZB6', 1, TO_DATE('2025-05-20', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (1, 'ZB7', 1, TO_DATE('2025-05-20', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (1, 'ZB8', 1, TO_DATE('2025-05-20', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (1, 'ZB9', 1, TO_DATE('2025-05-20', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (1, 'ZB10', 1, TO_DATE('2025-05-20', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (1, 'ZB11', 1, TO_DATE('2025-05-20', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (1, 'ZB12', 1, TO_DATE('2025-05-20', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (1, 'ZB13', 1, TO_DATE('2025-05-20', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (1, 'ZB14', 1, TO_DATE('2025-05-20', 'YYYY-MM-DD'), 'confirmata');
+
+
+INSERT INTO REZERVARE VALUES (2, 'ZB1', 6, TO_DATE('2025-05-21', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (3, 'ZB2', 7, TO_DATE('2025-06-05', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (4, 'ZB2', 8, TO_DATE('2025-06-06', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (5, 'ZB3', 9, TO_DATE('2025-08-01', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (6, 'ZB3', 10, TO_DATE('2025-08-02', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (7, 'ZB4', 11, TO_DATE('2025-08-10', 'YYYY-MM-DD'), 'in asteptare');
+
+INSERT INTO REZERVARE VALUES (8, 'ZB4', 12, TO_DATE('2025-08-11', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (9, 'ZB5', 13, TO_DATE('2025-09-01', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (10, 'ZB5', 14, TO_DATE('2025-09-02', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (11, 'ZB1', 8, TO_DATE('2025-05-22', 'YYYY-MM-DD'), 'anulata');
+
+INSERT INTO REZERVARE VALUES (12, 'ZB2', 2, TO_DATE('2025-06-01', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (13, 'ZB3', 3, TO_DATE('2025-07-25', 'YYYY-MM-DD'), 'confirmata');
+
+INSERT INTO REZERVARE VALUES (14, 'ZB4', 4, TO_DATE('2025-08-05', 'YYYY-MM-DD'), 'confirmata');
+
+
+--ex6
+
+set serveroutput on;
+create or replace procedure detalii_zbor(p_cod_zbor in VARCHAR2)
+
+is 
+
+v_exista NUMBER;
+
+type t_pas_id is record(
+cod_pasager pasager.cod_pasager%type,
+nume pasager.nume_pasager%type,
+prenume pasager.prenume_pasager%type,
+tip_act pasager.tip_carte_iden%type,
+status_rezervare rezervare.status%type,
+status_check_in bilet.status_check_in%type);
+
+type t_pasageri is table of t_pas_id;
+l_pasageri t_pasageri; --tablou imbricat pt a retine pasager si stare bagajului
+
+type t_tip_cnt is table of pls_integer index by varchar2(20);
+l_tip_cnt t_tip_cnt; --tablou indexat
+
+type t_top3 is varray(3) of varchar2(200);
+l_top3 t_top3:=t_top3(); --vector
+
+begin
+
+select 1 into v_exista from zbor where cod_zbor=p_cod_zbor;
+
+dbms_output.put_line('Detalii Zbor: '|| p_cod_zbor);
+
+select p.cod_pasager, p.nume_pasager, p.prenume_pasager, p.tip_carte_iden, r.status as status_rezervare, b.status_check_in
+bulk collect into l_pasageri
+from bilet b
+join pasager p on p.cod_pasager =b.cod_pasager
+left join (
+select cod_pasager,cod_zbor,
+case
+    when max(case when status = 'confirmata' then 1 else 0 end) = 1 then 'confirmata'
+    when max(case when status = 'in asteptare' then 1 else 0 end) = 1 then 'in asteptare'
+    when max(case when status = 'anulata' then 1 else 0 end) = 1 then 'anulata'
+    else null
+    end as status
+    from rezervare
+    where cod_zbor = p_cod_zbor
+    group by cod_pasager, cod_zbor
+) r
+on r.cod_pasager = b.cod_pasager
+and r.cod_zbor = b.cod_zbor
+where b.cod_zbor=p_cod_zbor and r.status='confirmata'
+order by p.cod_pasager;
+
+
+dbms_output.put_line('Pasageri pe zborul dat:');
+
+if l_pasageri.count = 0 then
+    dbms_output.put_line ('nu exist abilete cumparate pt acest zbor');
+    
+else
+    for i in 1..l_pasageri.count loop
+    dbms_output.put_line('Cod:'||l_pasageri(i).cod_pasager||'
+    '||'nume si prenume pasager:'||l_pasageri(i).nume||' '||l_pasageri(i).prenume||'
+    '||'| act de identitate: ' || l_pasageri(i).tip_act||'| status rezervare:'||nvl(l_pasageri(i).status_rezervare, 'fara rezervare')) ;
+    
+    if l_tip_cnt.exists(l_pasageri(i).tip_act) then
+        l_tip_cnt(l_pasageri(i).tip_act) := l_tip_cnt(l_pasageri(i).tip_act)+1;
+    else
+        l_tip_cnt(l_pasageri(i).tip_act):=1;
+    end if;
+    end loop;
+end if;
+
+dbms_output.put_line('Statistica act identitate: ');
+dbms_output.put_line ('CI: '||nvl(l_tip_cnt('CI'), 0));
+dbms_output.put_line ('Pasaport: '||nvl(l_tip_cnt('Pasaport'), 0));
+
+
+
+for t in (
+select *
+from (
+select p.cod_pasager, p.nume_pasager, p.prenume_pasager,
+nvl(sum(bg.pret), 0) as total_pret
+from bilet bi
+join pasager p on p.cod_pasager = bi.cod_pasager
+left join bagaj bg on bg.cod_pasager = p.cod_pasager
+where bi.cod_zbor = p_cod_zbor
+group by p.cod_pasager, p.nume_pasager, p.prenume_pasager
+order by total_pret desc
+)
+where rownum <= 3
+) loop
+l_top3.extend;
+l_top3(l_top3.count):=
+t.cod_pasager || ' ' || t.nume_pasager || ' '|| t.prenume_pasager || '--pret bagaj' || t.total_pret;
+end loop;
+
+dbms_output.put_line('Top 3 pasageri dupa pretul bagajului: ');
+
+if l_top3.count=0 then
+dbms_output.put_line ('nu exista pasageri pt acest zbor.');
+
+else
+    for i in 1..l_top3.count loop
+    dbms_output.put_line('#' || i ||':'|| l_top3(i));
+    end loop;
+    end if;
+    
+exception
+when no_data_found then
+    dbms_output.put_line ('Eroare! Zborul cautat nu exista');
+
+end;
+
+
+
+–-apel
+begin
+detalii_zbor('ZB99');
+end;
+
+
+--ex7
+
+set serveroutput on;
+
+create or replace procedure raport_angajati(
+p_optiune in number,
+p_sal_min in number,
+p_sal_max in number,
+p_an_min in number,
+p_total_ang out number)
+is
+
+type c_din is ref cursor;
+
+c c_din;
+
+v_cod_ang angajat.cod_angajat%type;
+v_tip angajat.tip_angajat%type;
+v_sal angajat.salariu%type;
+v_an angajat.an_angajare%type;
+
+cursor c_detalii (p_cod_ang angajat.cod_angajat%type) is
+
+select linie
+from (select 'Pilot | Licenta: '|| p.tip_licenta as linie
+from pilot p
+where p.cod_angajat=p_cod_ang
+union all
+select 'Insotitor | limbi vorbite: '||iz.nr_limbi_vorbite
+from insotitor_zbor iz
+where iz.cod_angajat=p_cod_ang
+union all
+select 'Cadru medical | specializare: '|| cm.specializare
+from cadru_medical cm
+where cm.cod_angajat=p_cod_ang);
+
+e_opt_invalida exception;
+e_parametri_invalizi exception;
+
+begin
+p_total_ang :=0;
+
+if p_optiune not in (1,2,3) then
+raise e_opt_invalida;
+end if;
+
+if p_optiune =1 then
+    if p_sal_min is not null or p_sal_max is not null or p_an_min is not null then
+    raise e_parametri_invalizi;
+    end if;
+    open c for
+    select cod_angajat, tip_angajat, salariu, an_angajare
+    from angajat
+    order by cod_angajat;
+    
+elsif p_optiune=2 then
+if p_sal_min is null or p_sal_max is null or p_sal_min>p_sal_max or p_an_min is not null then
+    raise e_parametri_invalizi;
+    end if;
+
+    open c for 
+    select cod_angajat, tip_angajat, salariu, an_angajare
+    from angajat
+    where salariu between p_sal_min and p_sal_max
+    order by salariu desc, cod_angajat;
+    
+elsif p_optiune=3 then
+if p_an_min is null  or p_an_min>extract (year from sysdate) then
+raise e_parametri_invalizi;
+end if;
+
+    open c for
+    select cod_angajat, tip_angajat, salariu, an_angajare
+    from angajat
+    where an_angajare>p_an_min
+    order by an_angajare, cod_angajat;
+    
+else
+
+raise e_opt_invalida;
+end if;
+
+dbms_output.put_line('Raport Angajati: ');
+
+loop 
+fetch c into v_cod_ang, v_tip, v_sal, v_an;
+exit when c%notfound;
+p_total_ang := p_total_ang +1;
+
+dbms_output.put_line ('Angajatulcu id-ul '|| v_cod_ang || ' care a fost angajat pe post de '|| v_tip ||' in anul ' || v_an|| ' care primeste salariul: '||v_sal);
+dbms_output.put_line('Detalii - ');
+
+declare 
+v_gasit boolean := false;
+
+begin
+for d in c_detalii(v_cod_ang) loop
+v_gasit:=true;
+dbms_output.put_line(d.linie);
+end loop;
+
+if not v_gasit then
+dbms_output.put_line ('nu exista in baza de date');
+end if;
+end;
+end loop;
+
+close c;
+
+
+dbms_output.put_line('Total angajati afisati: '||p_total_ang);
+
+
+exception
+when e_opt_invalida then
+dbms_output.put_line('optiune invalida. Alege intre 1, 2 si 3.');
+if c%isopen then 
+close c;
+end if;
+
+when e_parametri_invalizi then
+dbms_output.put_line ('Parametri invalizi pt opriunea aleasa');
+dbms_output.put_line('Opt 1: fara parametri.');
+dbms_output.put_line('Opt 2: sal_min si sal_max pozitive, sal_min<sal_max si fara an_min');
+dbms_output.put_line('Opt 3: an min valid, fara sal_min, sal_max');
+
+if c%isopen then 
+close c;
+end if;
+
+when others then
+dbms_output.put_line ('eroare');
+
+if c%isopen then 
+close c;
+end if;
+
+end;
+
+–apelul
+
+
+declare 
+v_ang number;
+
+
+begin
+raport_angajati(1, null, null, null, v_ang);--opt1
+
+
+--raport_angajati(2, 4000, 5000, null, v_ang);--opt2
+
+
+--raport_angajati(3, null, null, 2020, v_ang);--opt3
+--raport_angajati(9, null, null, null, v_ang);--exceptie optiune invalida
+--raport_angajati(3, 1000, null, null, v_ang);--exceptie parametri invalizi
+end;
+
+
+--ex8
+
+
+create or replace function f_top_client_continent(
+p_cod_continent in varchar2
+)
+return number
+is 
+v_cod_client number;
+e_cod_null exception;
+e_nu_exista_c exception;
+v_exista number;
+
+begin
+
+if P_cod_continent is null then
+raise e_cod_null;
+end if;
+
+BEGIN
+
+select 1 into v_exista 
+from continent
+where p_cod_continent=cod_continent;
+
+exception
+when no_data_found then
+raise e_nu_exista_c;
+
+END;
+
+
+
+
+
+select cod_client
+into v_cod_client
+from (select r.cod_client, count(*) as cnt 
+from rezervare r
+join zbor z on z.cod_zbor=r.cod_zbor
+join aeroport ap on z.cod_aeroport_plecare=ap.cod_aeroport
+join oras o on o.cod_oras=ap.cod_oras
+join tara t on o.cod_tara=t.cod_tara
+join continent c on c.cod_continent=t.cod_continent
+where c.cod_continent=p_cod_continent
+and r.status='confirmata'
+group by r.cod_client)
+where cnt=(select max(cnt2) from (
+select count(*) as cnt2
+from rezervare r2
+join zbor z2 on z2.cod_zbor=r2.cod_zbor
+join aeroport ap2 on z2.cod_aeroport_plecare=ap2.cod_aeroport
+join oras o2 on o2.cod_oras=ap2.cod_oras
+join tara t2 on o2.cod_tara=t2.cod_tara
+join continent c2 on c2.cod_continent=t2.cod_continent
+where c2.cod_continent=p_cod_continent
+and r2.status='confirmata'
+group by r2.cod_client));
+
+return v_cod_client;
+
+exception
+when e_cod_null then
+return -10;
+when e_nu_exista_c then
+return -11;
+when no_data_found then
+return null;
+when too_many_rows then
+return -1;
+when others then
+return -2;
+end;
+
+--apeluri
+
+set serveroutput on;
+declare 
+v number;
+
+begin
+
+--pentru parametru trimis null
+v:=f_top_client_continent(NULL);
+dbms_output.put_line(nvl(to_char(v), 'NULL')||'daca e -10 am trimis parametru null si am intrat pe caz de exceptie');
+
+--apel corect - rezultatul este 1
+v:=f_top_client_continent('EU');
+dbms_output.put_line('EU - codul clientului este : '|| nvl(to_char(v), 'NULL'));
+
+
+--apel pt exceptia in care nu exista rezervari pt acel continent
+v:=f_top_client_continent('AN');
+dbms_output.put_line('AN - '|| nvl(to_char(v), 'NULL')||' daca e null am primit exceptia no_data_found- nu exista rezervari PT CONTINENTUL DAT');
+
+--apel pt exceptia cand continentul nu exista in baza de date
+v:=f_top_client_continent('SP');
+dbms_output.put_line('SP - '|| nvl(to_char(v), 'NULL')||' daca e -11 am primit exceptia E_NU_EXISTA_CONT- nu exista CONTINENTUL IN BAZA DE DATE');
+
+
+end;
+
+--pt cazul too many rows inseram temporar inregistrari in plus in rezervare si ne uitam in dual
+--daca a returnat -1 am intrat pe cazul too many rows
+INSERT INTO REZERVARE VALUES (2, 'ZB2',  2, TO_DATE('2025-05-23','YYYY-MM-DD'), 'confirmata');
+INSERT INTO REZERVARE VALUES (2, 'ZB3',  3, TO_DATE('2025-05-24','YYYY-MM-DD'), 'confirmata');
+INSERT INTO REZERVARE VALUES (2, 'ZB4',  4, TO_DATE('2025-05-25','YYYY-MM-DD'), 'confirmata');
+INSERT INTO REZERVARE VALUES (2, 'ZB6',  5, TO_DATE('2025-05-26','YYYY-MM-DD'), 'confirmata');
+INSERT INTO REZERVARE VALUES (2, 'ZB7',  6, TO_DATE('2025-05-27','YYYY-MM-DD'), 'confirmata');
+INSERT INTO REZERVARE VALUES (2, 'ZB8',  7, TO_DATE('2025-05-28','YYYY-MM-DD'), 'confirmata');
+INSERT INTO REZERVARE VALUES (2, 'ZB9',  8, TO_DATE('2025-05-29','YYYY-MM-DD'), 'confirmata');
+INSERT INTO REZERVARE VALUES (2, 'ZB10', 9, TO_DATE('2025-05-30','YYYY-MM-DD'), 'confirmata');
+INSERT INTO REZERVARE VALUES (2, 'ZB11', 10, TO_DATE('2025-05-31','YYYY-MM-DD'), 'confirmata');
+
+select f_top_client_continent('EU') from dual
+
+DELETE FROM REZERVARE
+WHERE cod_client = 2
+  AND cod_zbor IN ('ZB2','ZB3','ZB4','ZB6','ZB7','ZB8','ZB9','ZB10','ZB11')
+  AND cod_pasager IN (2,3,4,5,6,7,8,9,10);
+
+
+
+--ex9
+
+
+create or replace procedure p_bonus_piloti_buget(
+p_cod_aeronava in varchar2,
+p_an_min in number,
+p_bonus_fix in number,
+p_nr_modificari out number,
+p_buget_bonus in out number)
+
+is
+e_nu_exista_aeronava exception;
+e_an_invalid exception;
+e_bonus_invalid exception;
+e_buget_insuficient exception;
+e_nu_exista_eligibili exception;
+
+v_exista number;
+v_nr_eligibili number:=0;
+v_cost_total number :=0;
+
+
+
+begin
+
+p_nr_modificari:=0;
+
+
+begin
+
+select 1 into v_exista 
+from aeronava where cod_aeronava=p_cod_aeronava;
+exception
+when no_data_found then
+raise e_nu_exista_aeronava;
+end;
+
+
+if p_an_min is null or p_an_min>extract(year from sysdate) then
+raise e_an_invalid;
+end if;
+
+
+if p_bonus_fix is null or p_bonus_fix <0 then
+raise e_bonus_invalid;
+end if;
+
+
+if p_buget_bonus is null or p_buget_bonus <0 then
+raise e_bonus_invalid;
+end if;
+
+
+select count(*) into v_nr_eligibili
+from
+(select distinct a.cod_angajat
+from angajat a
+join pilot p on p.cod_angajat=a.cod_angajat
+join orar_angajati oa on oa.cod_angajat=a.cod_angajat
+join zbor z on oa.cod_zbor=z.cod_zbor
+join aeronava av on av.cod_aeronava=z.cod_aeronava
+where oa.rol='PRINCIPAL'
+and av.cod_aeronava=p_cod_aeronava
+and extract(year from sysdate)>=p_an_min);
+
+if v_nr_eligibili=0 then
+raise e_nu_exista_eligibili;
+end if;
+v_cost_total:=v_nr_eligibili*p_bonus_fix;
+
+if p_buget_bonus<v_cost_total then
+raise e_buget_insuficient;
+end if;
+
+update angajat a
+set a.salariu=a.salariu+p_bonus_fix
+where a.cod_angajat in(select cod_angajat from(
+select distinct a2.cod_angajat
+from angajat a2
+join pilot p2 on p2.cod_angajat=a2.cod_angajat
+join orar_angajati oa2 on oa2.cod_angajat=a2.cod_angajat
+join zbor z2 on oa2.cod_zbor=z2.cod_zbor
+join aeronava av2 on av2.cod_aeronava=z2.cod_aeronava
+where oa2.rol='PRINCIPAL'
+and av2.cod_aeronava=p_cod_aeronava
+and extract(year from sysdate)>=p_an_min
+order by a2.cod_angajat
+)where rownum<= floor (p_buget_bonus/p_bonus_fix)
+);
+
+p_nr_modificari:= sql%rowcount;
+
+p_buget_bonus:=p_buget_bonus-(p_nr_modificari*p_bonus_fix);
+
+if p_nr_modificari=0 then
+raise e_buget_insuficient;
+end if;
+
+exception
+
+when e_nu_exista_aeronava then
+dbms_output.put_line('Eroare, nu exista aeronava '||p_cod_aeronava);
+p_nr_modificari:=-10;
+when e_an_invalid then
+dbms_output.put_line('Eroare, an invalid '||nvl(to_char(p_an_min), 'NULL'));
+p_nr_modificari:=-11;
+when e_bonus_invalid then
+dbms_output.put_line('Eroare, buget invalid ');
+p_nr_modificari:=-12;
+when e_nu_exista_eligibili then
+dbms_output.put_line('NU exista piloti eligibili pt criteriile date');
+p_nr_modificari:=0;
+when e_buget_insuficient then
+dbms_output.put_line('Buget insuficient pentru a acorda bonus');
+p_nr_modificari:=0;
+when others then
+dbms_output.put_line('Alta eroare:  '|| sqlerrm);
+p_nr_modificari:=-99;
+
+end;
+
+set serveroutput on;
+declare 
+v_buget number :=5000;
+--v_buget number :=-5;--buget invalid
+--v_buget number :=50;--buget insuficient
+
+v_nr number;
+
+begin
+--p_bonus_piloti_buget('A320', 2025, 200, v_nr, v_buget);
+
+--dbms_output.put_line ('Nr angajati care au primit bonus - '||v_nr);
+
+--dbms_output.put_line('Buget ramas '|| v_buget);
+--rollback;
+--p_bonus_piloti_buget('XXX', 2025, 200,v_nr, v_buget);
+--p_bonus_piloti_buget('A320', 3000, 200, v_nr, v_buget);
+--p_bonus_piloti_buget('A320', 2022, 0, v_nr, v_buget);
+p_bonus_piloti_buget('B747', 2022, 0, v_nr, v_buget);
+
+end;
+
+--ex10
+set serveroutput on;
+
+create or replace trigger trig_ang_salariu
+after update of salariu on angajat
+
+declare
+
+
+v_total number;
+
+begin
+
+dbms_output.put_line ('AM intrat in triggr');
+raport_angajati(2,3000,12000, null,v_total);
+dbms_output.put_line('s a declansat triggerul');
+
+end;
+
+
+--apel:
+
+
+update angajat
+set salariu=salariu+100
+where cod_angajat in (1,2);
+
+rollback
+
+
+--ex11
+
+create or replace procedure p_asigura_bilet_confirmare(
+p_cod_pasager in number,
+p_cod_zbor in varchar2)
+is
+
+begin
+
+insert into bilet values (p_cod_pasager, p_cod_zbor, 'NEREALIZAT');
+
+exception
+when dup_val_on_index then
+null;
+
+end;
+
+
+
+set serveroutput on;
+create or replace trigger trg_rezervare_auto
+
+before insert or update of status, cod_pasager,cod_zbor on rezervare
+for each row
+
+begin
+dbms_output.put_line('Am declansat trigger');
+
+if inserting and :new.status = 'confirmata' then
+p_asigura_bilet_confirmare(:new.cod_pasager, :new.cod_zbor);
+
+end if;
+
+if updating then
+
+if :old.status!='confirmata' and :new.status = 'confirmata' then
+p_asigura_bilet_confirmare (:new.cod_pasager, :new.cod_zbor);
+end if;
+end if;
+end;
+
+
+
+
+--apel:
+
+
+set serveroutput on;
+update rezervare 
+set status='confirmata'
+where cod_client=1 and cod_pasager=1;
+
+insert into rezervare values (3, 'ZB4', 5, sysdate, 'confirmata');
+
+rollback
+
+--ex12
+
+create table audit_modificari_continent(
+id_audit number primary key,
+data_ev date default SYSDATE not null,
+utilizator varchar2(30) not null,
+nume_obiect varchar2(20) not null,
+mesaj varchar2(200)
+);
+
+create sequence sec_mod_cont start with 1 increment by 1;
+
+create or replace procedure p_log_mod_cont(
+p_nume_ev in varchar2,
+p_mesaj in varchar2)
+is 
+pragma autonomous_transaction;
+begin
+
+insert into audit_modificari_continent values(sec_mod_cont.nextval,sysdate,SYS_CONTEXT('USERENV', 'SESSION_USER'),
+p_nume_ev, p_mesaj);
+
+commit;
+exception
+when others then
+rollback;
+
+end;
+
+create or replace trigger protect_continent 
+before alter or drop on schema
+declare
+begin
+
+if ORA_DICT_OBJ_TYPE='TABLE'
+    and upper(ORA_DICT_OBJ_NAME)='CONTINENT'
+    
+    then
+    
+    p_log_mod_cont(ORA_DICT_OBJ_NAME, 'BLOCAT!  Tabela continent este protejata.' );
+    
+    RAISE_APPLICATION_ERROR(-20200,
+    'Nu ai voie sa modifici tabela rezervare.');
+    
+    end if;
+end;
+
+–-apelul
+
+alter table continent add (test number)
+
+–-sau
+
+drop table continent
+
+
+--ex13
+
+create or replace package echipaj_zbor as
+
+
+type t_membru_rec is record(
+cod_zbor zbor.cod_zbor%type,
+cod_angajat angajat.cod_angajat%type,
+tip_angajat angajat.tip_angajat%type,
+rol orar_angajati.rol%type,
+salariu angajat.salariu%type,
+exp_ani number,
+an_angajare angajat.an_angajare%type);
+
+
+type t_membru_tab is table of t_membru_rec;
+
+type t_stat_map is table of pls_integer index by varchar2(40);
+
+type t_rc is ref cursor;
+
+type t_profil_echipaj is record(
+cod_zbor zbor.cod_zbor%type,
+nr_total number,
+nr_principal number,
+nr_secundar number,
+nr_piloti number,
+nr_insotitori number,
+nr_medical number,
+sal_min number,
+sal_med number,
+sal_max number,
+scor_echipaj number);
+
+e_zbor_inexistent exception;
+e_echipaj_inexistent exception;
+e_fara_pilot_principal exception;
+e_parametri_invalizi exception;
+
+function f_ani_experienta (p_cod_angajat in number) return number;
+function f_lista_echipaj (p_cod_zbor in varchar2) return t_membru_tab;
+function f_scor_echipaj (p_cod_zbor in varchar2) return number;
+function f_profil_echipaj (p_cod_zbor in varchar2) return t_profil_echipaj;
+
+procedure p_valideaza_echipaj(p_cod_zbor in varchar2);
+procedure p_afiseaza_echipaj(p_cod_zbor in varchar2);
+procedure p_check_zbor(p_cod_zbor in varchar2);
+
+
+end echipaj_zbor;
+
+
+
+
+create or replace package body echipaj_zbor as
+
+procedure p_check_zbor(p_cod_zbor in varchar2) is
+v number;
+begin
+select 1 into v from zbor where cod_zbor=p_cod_zbor;
+exception
+when no_data_found then
+raise e_zbor_inexistent;
+end;
+
+
+function f_ani_experienta(p_cod_angajat in number) return number is
+v_an angajat.an_angajare%type;
+
+begin
+select an_angajare into v_an
+from angajat
+where cod_angajat=p_cod_angajat;
+
+return extract(year from sysdate)-v_an+5;
+exception
+when no_data_found then
+return null;
+end;
+
+
+function f_lista_echipaj (p_cod_zbor in varchar2) return t_membru_tab is
+l_tab t_membru_tab;
+begin
+p_check_zbor(p_cod_zbor);
+
+select oa.cod_zbor,
+a.cod_angajat,
+a.tip_angajat,
+oa.rol,
+a.salariu,
+f_ani_experienta(a.cod_angajat) as exp_ani,
+a.an_angajare
+bulk collect into l_tab
+from orar_angajati oa
+join angajat a on a.cod_angajat=oa.cod_angajat
+where oa.cod_zbor=p_cod_zbor
+order by case when oa.rol='PRINCIPAL' then 0 else 1 end, a.cod_angajat;
+
+
+if l_tab.count=0 then
+raise e_echipaj_inexistent;
+end if;
+return l_tab;
+end;
+
+
+procedure p_valideaza_echipaj (p_cod_zbor in varchar2) is 
+v_cnt number;
+
+begin
+p_check_zbor (p_cod_zbor);
+
+
+select count(*)
+into v_cnt
+from orar_angajati oa
+join angajat a on a.cod_angajat=oa.cod_angajat
+where oa.cod_zbor=p_cod_zbor
+and oa.rol='PRINCIPAL'
+and lower(a.tip_angajat)='pilot';
+
+if v_cnt=0 then
+raise e_fara_pilot_principal;
+end if;
+end;
+
+function f_scor_echipaj (p_cod_zbor in varchar2) return number is
+l_tab t_membru_tab;
+v_scor number:=0;
+begin
+p_valideaza_echipaj (p_cod_zbor);
+l_tab:=f_lista_echipaj(p_cod_zbor);
+
+for i in 1..l_tab.count loop
+v_scor :=v_scor+nvl(l_tab(i).exp_ani,0)+nvl(l_tab(i).salariu, 0)/1000+
+case when l_tab(i).rol='PRINCIPAL' then 1 else 0 end;
+
+end loop;
+
+return round(v_scor, 2);
+
+
+exception
+when e_fara_pilot_principal then
+return -1;
+when e_echipaj_inexistent then
+return 0;
+end;
+
+
+function f_profil_echipaj(p_cod_zbor in varchar2) return t_profil_echipaj is
+r t_profil_echipaj;
+begin
+p_check_zbor(p_cod_zbor);
+
+select p_cod_zbor as cod_zbor,
+count(*) as nr_total,
+sum(case when oa.rol='PRINCIPAL' then 1 else 0 end) as nr_principal,
+sum(case when oa.rol='SECUNDAR' then 1 else 0 end) as nr_secundar,
+sum (case when lower(a.tip_angajat) like 'pilot%' then 1 else 0 end) as nr_piloti,
+sum (case when lower(a.tip_angajat) like 'insotitor%' then 1 else 0 end) as nr_insotitori,
+sum (case when lower(a.tip_angajat) like 'cadru%' then 1 else 0 end) as nr_medical,
+min(a.salariu) as sal_min,
+avg(a.salariu) as sal_med,
+max(a.salariu) as sal_max
+into
+r.cod_zbor, r.nr_total, r.nr_principal,r.nr_secundar, r.nr_piloti,r.nr_insotitori, r.nr_medical,r.sal_min,r.sal_med,
+r.sal_max
+from orar_angajati oa
+join angajat a on a.cod_angajat=oa.cod_angajat
+where oa.cod_zbor=p_cod_zbor;
+
+if r.nr_total=0 then
+raise e_echipaj_inexistent;
+end if;
+
+r.scor_echipaj:=f_scor_echipaj(p_cod_zbor);
+
+return r;
+
+
+end;
+
+procedure p_afiseaza_echipaj (p_cod_zbor in varchar2) is
+l_tab t_membru_tab;
+prof t_profil_echipaj;
+begin
+p_valideaza_echipaj(p_cod_zbor);
+l_tab:=f_lista_echipaj(p_cod_zbor);
+
+dbms_output.put_line ('ECHIPAJ PT ZBORUL'|| p_cod_zbor);
+
+for i in 1..l_tab.count loop
+dbms_output.put_line(
+'Angajat '||l_tab(i).cod_angajat||
+'---'||l_tab(i).tip_angajat||
+'--- rol = '||l_tab(i).rol||
+'--- salariu = '||l_tab(i).salariu||
+'---experienta = '||f_ani_experienta(l_tab(i).cod_angajat)||'ani.');
+end loop;
+
+dbms_output.put_line('PROFIL ECHIPAJ:');
+prof:= f_profil_echipaj(p_cod_zbor);
+dbms_output.put_line('Total '||prof.nr_total||
+'/ Principal '||prof.nr_principal||'/ Secundar '||prof.nr_secundar);
+
+dbms_output.put_line('Piloti'||prof.nr_piloti||
+'/ Insositori de zbor '||prof.nr_insotitori||'/ Cadre medicale '||prof.nr_secundar);
+
+
+dbms_output.put_line('Salariu minim'||prof.sal_min||
+'/ Salariu mediu '||prof.sal_med||'/ salariu maxim '||prof.sal_max);
+
+
+dbms_output.put_line('Scor echipaj '||prof.scor_echipaj);
+
+end;
+end;
+
+–-apel
+set serveroutput on;
+begin
+echipaj_zbor.p_afiseaza_echipaj('ZB1');
+end;
+
+
+
+
