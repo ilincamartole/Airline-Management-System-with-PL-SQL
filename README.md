@@ -89,9 +89,9 @@ A package for generating a complete crew profile for a given flight.
 
 ---
 
-## 📊 Sample Data
+## Sample Data
 
 The database is seeded with realistic sample data including 15 clients, 14 loyalty accounts, 7 continents, 15 countries, 19 cities, 19 airports, 8 aircraft models, 14 scheduled flights, 15 passengers, 15 pieces of luggage, 15 employees (5 pilots, 5 flight attendants, 5 medical staff), and 28+ reservations.
 
   
-Academic year 2025–2026 · SGBD (Database Management Systems) Project
+
